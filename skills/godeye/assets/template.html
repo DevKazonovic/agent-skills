@@ -1,0 +1,344 @@
+<title>Example System Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#fafafa;--surface:#ffffff;--sunken:#f4f4f5;--line:#e4e4e7;--line-strong:#d4d4d8;
+  --fg:#18181b;--muted:#52525b;--faint:#85858e;
+  --accent:#007574;--accent-soft:#e6f4f4;--accent-line:#a3d6d5;
+  --font-sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#09090b;--surface:#111113;--sunken:#18181b;--line:#27272a;--line-strong:#3f3f46;
+    --fg:#f4f4f5;--muted:#a1a1aa;--faint:#77777f;
+    --accent:#48b7b7;--accent-soft:#0d2727;--accent-line:#235f5e;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09090b;--surface:#111113;--sunken:#18181b;--line:#27272a;--line-strong:#3f3f46;
+  --fg:#f4f4f5;--muted:#a1a1aa;--faint:#77777f;
+  --accent:#48b7b7;--accent-soft:#0d2727;--accent-line:#235f5e;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);font-size:14px;line-height:1.5;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+code{font-family:var(--font-mono);font-size:.88em;color:var(--fg)}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.bar{flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:10px 22px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:baseline;gap:8px;font-size:14px;white-space:nowrap}
+.brand b{font-weight:600}
+.brand span{color:var(--faint)}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{display:inline-block;width:22px;height:0;border-top:1.5px solid var(--faint)}
+.legend i.live{border-top:2px solid var(--accent)}
+.legend .tip{color:var(--fg);font-weight:500}
+.zoom{display:flex;gap:4px;margin-inline-start:auto}
+.zoom button{border:1px solid var(--line-strong);background:var(--surface);border-radius:7px;padding:4px 10px;font-size:12.5px;cursor:pointer;min-width:32px}
+.zoom button:hover{border-color:var(--accent);color:var(--accent)}
+
+.stage{flex:1;position:relative;min-height:0}
+.canvas{position:absolute;inset:0;overflow:auto;padding-block:12px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#sys{display:block;margin:0 auto;width:100%;min-width:800px;height:auto}
+#sys text{font-family:var(--font-sans)}
+.hd{font-size:11px;font-weight:600;letter-spacing:.09em;fill:var(--faint)}
+.zone-r{fill:var(--sunken);stroke:var(--line);stroke-width:1}
+.frame-r{fill:var(--bg);stroke:var(--line-strong);stroke-width:1;stroke-dasharray:5 4}
+.zone-r.fsel,.frame-r.fsel{stroke:var(--accent);stroke-width:1.6}
+.nd{cursor:pointer;outline:none}
+.nd .b{fill:var(--surface);stroke:var(--line-strong);stroke-width:1}
+.nd .t{font-size:14px;font-weight:600;fill:var(--fg);text-anchor:middle}
+.nd .s{font-size:11.5px;fill:var(--muted);text-anchor:middle}
+.nd .sm{font-size:11px;font-family:var(--font-mono);fill:var(--muted);text-anchor:middle}
+.nd:hover .b,.nd:focus-visible .b{stroke:var(--accent)}
+.nd:focus-visible .b{stroke-width:2}
+.nd.sel .b{stroke:var(--accent);stroke-width:2;fill:var(--accent-soft)}
+.nd.rel .b{stroke:var(--accent)}
+.hdr .hit{fill:transparent;stroke:none}
+.hdr .h{font-size:11px;font-weight:600;letter-spacing:.09em;fill:var(--muted)}
+.hdr:hover .h,.hdr:focus-visible .h,.hdr.sel .h,.hdr.rel .h{fill:var(--accent)}
+.hdr:focus-visible .hit{stroke:var(--accent);stroke-width:1.5}
+.ed path,.ed line{fill:none;stroke:var(--faint);stroke-width:1.3;marker-end:url(#mN)}
+.ed .both{marker-start:url(#mN)}
+.ed text{font-size:11px;font-weight:500;fill:var(--muted)}
+.ed text.mono{font-family:var(--font-mono);font-size:10.5px;font-weight:400}
+.ed.live path,.ed.live line{stroke:var(--accent);stroke-width:1.8;marker-end:url(#mA)}
+.ed.live .both{marker-start:url(#mA)}
+.ed.hl path,.ed.hl line{stroke:var(--accent);stroke-width:2.2;marker-end:url(#mA)}
+.ed.hl .both{marker-start:url(#mA)}
+.ed.hl text{fill:var(--accent)}
+.ed .halo,.ed.hl .halo{stroke:var(--bg);stroke-width:7;marker-start:none;marker-end:none}
+.d-ahn{fill:var(--faint)}
+.d-aha{fill:var(--accent)}
+#sys .nd,#sys .ed{transition:opacity .15s}
+#sys.focus .nd:not(.sel):not(.rel){opacity:.38}
+#sys.focus .ed:not(.hl){opacity:.14}
+
+.panel{position:absolute;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);border-inline-start:1px solid var(--line-strong);transform:translateX(102%);transition:transform .22s ease;display:flex;flex-direction:column;z-index:5}
+.panel.open{transform:none}
+.p-head{flex:none;display:flex;align-items:flex-start;gap:12px;padding:16px 20px 12px;padding-right:max(20px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+.p-kind{margin:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.p-title{margin:3px 0 0;font-size:19px;line-height:1.25;font-weight:600;letter-spacing:-.01em;outline:none}
+.p-close{margin-inline-start:auto;flex:none;width:32px;height:32px;border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;cursor:pointer;font-size:18px;line-height:1}
+.p-close:hover{border-color:var(--accent);color:var(--accent)}
+.p-body{flex:1;overflow:auto;padding:16px 20px;padding-right:max(20px,env(safe-area-inset-right,0px));padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+.p-lead{margin:0 0 6px;font-size:14.5px;line-height:1.5}
+.p-gap{height:10px}
+.p-body h3{margin:20px 0 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.p-body ul,.p-body ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted)}
+.p-body li::marker{color:var(--faint)}
+.p-body ol li::marker{font-family:var(--font-mono);font-size:12px}
+.p-body dl{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:7px 14px;font-size:13.5px}
+.p-body dt{color:var(--faint)}
+.p-body dd{margin:0;color:var(--fg);min-width:0}
+.p-code{display:flex;flex-direction:column;gap:5px}
+.p-code code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.p-links{display:flex;flex-wrap:wrap;gap:6px}
+.p-links button{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:3px 11px;font-size:12.5px;cursor:pointer}
+.p-links button:hover{border-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.panel,#sys .nd,#sys .ed{transition:none}}
+</style>
+
+<header class="bar">
+  <div class="brand"><b>Example</b><span>/</span>Orders<span>·</span>System</div>
+  <div class="legend">
+    <span><i class="live"></i>live request</span>
+    <span><i></i>call or data flow</span>
+    <span class="tip">Click any box for its details</span>
+  </div>
+  <div class="zoom" role="group" aria-label="Zoom">
+    <button type="button" id="zo" aria-label="Zoom out">−</button>
+    <button type="button" id="zf">Whole system</button>
+    <button type="button" id="zi" aria-label="Zoom in">+</button>
+  </div>
+</header>
+
+<div class="stage">
+  <div class="canvas" id="canvas">
+    <svg id="sys" viewBox="0 0 1600 540" role="group" aria-label="Example system map. Every box opens its details.">
+      <defs>
+        <marker id="mN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-ahn"/></marker>
+        <marker id="mA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-aha"/></marker>
+      </defs>
+
+      <text x="50" y="22" class="hd">PEOPLE AND APPS</text>
+      <rect id="z-backend" x="24" y="126" width="1552" height="200" rx="14" class="zone-r"/>
+      <rect id="z-db" x="24" y="440" width="1552" height="84" rx="14" class="zone-r"/>
+
+      <g class="ed live" data-a="user" data-b="webapp"><line x1="230" y1="62" x2="270" y2="62" class="both"/><text x="250" y="55" text-anchor="middle">uses</text></g>
+      <g class="ed live" data-a="webapp" data-b="api"><line x1="360" y1="90" x2="360" y2="162"/><text x="368" y="130" class="mono">POST /orders</text></g>
+      <g class="ed" data-a="api" data-b="worker"><line x1="450" y1="190" x2="490" y2="190"/><text x="470" y="183" text-anchor="middle">queues</text></g>
+      <g class="ed" data-a="backend" data-b="db" data-x="api worker tables"><line x1="32" y1="326" x2="32" y2="440" class="both"/><text x="40" y="388">reads, writes</text></g>
+
+      <g class="nd" data-id="user" role="button" tabindex="0" aria-label="Shopper: open details"><rect class="b" x="50" y="34" width="180" height="56" rx="9"/><text class="t" x="140" y="57">Shopper</text><text class="s" x="140" y="75">places an order</text></g>
+      <g class="nd" data-id="webapp" role="button" tabindex="0" aria-label="Web app: open details"><rect class="b" x="270" y="34" width="180" height="56" rx="9"/><text class="t" x="360" y="57">Web app</text><text class="sm" x="360" y="75">/checkout</text></g>
+      <g class="nd" data-id="api" role="button" tabindex="0" aria-label="Orders API: open details"><rect class="b" x="270" y="162" width="180" height="56" rx="9"/><text class="t" x="360" y="185">Orders API</text><text class="s" x="360" y="203">validates and saves</text></g>
+      <g class="nd" data-id="worker" role="button" tabindex="0" aria-label="Order worker: open details"><rect class="b" x="490" y="162" width="180" height="56" rx="9"/><text class="t" x="580" y="185">Order worker</text><text class="s" x="580" y="203">emails and stock</text></g>
+      <g class="nd" data-id="tables" role="button" tabindex="0" aria-label="Order tables: open details"><rect class="b" x="50" y="472" width="360" height="42" rx="8"/><text class="t" x="230" y="489">Order tables</text><text class="s" x="230" y="506">orders, order_items</text></g>
+
+      <g class="nd hdr" data-id="backend" role="button" tabindex="0" aria-label="Backend: open details"><rect class="hit" x="34" y="134" width="120" height="22" rx="4"/><text class="h" x="40" y="149">BACKEND</text></g>
+      <g class="nd hdr" data-id="db" role="button" tabindex="0" aria-label="Database: open details"><rect class="hit" x="34" y="446" width="130" height="22" rx="4"/><text class="h" x="40" y="461">DATABASE</text></g>
+    </svg>
+  </div>
+
+  <aside class="panel" id="panel" aria-labelledby="p-title" aria-hidden="true" inert>
+    <div class="p-head">
+      <div>
+        <p class="p-kind" id="p-kind"></p>
+        <h2 class="p-title" id="p-title" tabindex="-1"></h2>
+      </div>
+      <button type="button" class="p-close" id="p-close" aria-label="Close details">×</button>
+    </div>
+    <div class="p-body" id="p-body"></div>
+  </aside>
+</div>
+
+<script>
+(function () {
+  var D = {
+    "user": {
+      kind: "Person", title: "Shopper",
+      lead: "Someone buying from the shop.",
+      links: ["webapp"]
+    },
+    "webapp": {
+      kind: "Frontend", title: "Web app",
+      lead: "The checkout page at `/checkout`.",
+      blocks: [{ list: ["Sends the cart to `POST /orders`", "Shows the order number when the API answers"] }],
+      links: ["user", "api"]
+    },
+    "api": {
+      kind: "Backend · HTTP", title: "Orders API",
+      lead: "Validates the cart, saves the order and queues the follow-up work.",
+      blocks: [
+        { h: "Steps", steps: ["Checks stock and prices", "Saves the order and its items", "Queues the confirmation job"] },
+        { h: "Limits", kv: [["Timeout", "10 s"], ["Rate limit", "30 requests per minute"]] }
+      ],
+      code: ["app/Http/Controllers/OrderController.php"],
+      links: ["webapp", "worker", "tables"]
+    },
+    "worker": {
+      kind: "Backend · queue", title: "Order worker",
+      lead: "Sends the confirmation email and lowers stock.",
+      blocks: [{ list: ["Runs on the `orders` queue", "Retries 3 times"] }],
+      links: ["api", "tables"]
+    },
+    "tables": {
+      kind: "Database", title: "Order tables",
+      lead: "`orders` and `order_items`.",
+      links: ["api", "worker"]
+    },
+    "backend": {
+      kind: "Stack", title: "Backend",
+      lead: "The API and its queue worker.",
+      links: ["api", "worker"]
+    },
+    "db": {
+      kind: "Store", title: "Database",
+      lead: "The main database, shared by the API and the worker.",
+      links: ["tables"]
+    }
+  };
+
+  var FRAME = { backend: "z-backend", db: "z-db" };
+  var KIDS = {
+    backend: ["api", "worker"],
+    db: ["tables"]
+  };
+
+  var PARENT = {};
+  Object.keys(KIDS).forEach(function (p) { KIDS[p].forEach(function (k) { if (!PARENT[k]) PARENT[k] = p; }); });
+
+  var svg = document.getElementById("sys");
+  var canvas = document.getElementById("canvas");
+  var nodes = Array.prototype.slice.call(svg.querySelectorAll(".nd"));
+  var edges = Array.prototype.slice.call(svg.querySelectorAll(".ed"));
+  var panel = document.getElementById("panel");
+  var pKind = document.getElementById("p-kind");
+  var pTitle = document.getElementById("p-title");
+  var pBody = document.getElementById("p-body");
+  var current = null;
+  var opener = null;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function fmt(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function nodeOf(id) { for (var i = 0; i < nodes.length; i++) { if (nodes[i].dataset.id === id) return nodes[i]; } return null; }
+
+  function highlight(id) {
+    var set = {}; set[id] = true;
+    (KIDS[id] || []).forEach(function (k) { set[k] = true; });
+    var rel = {};
+    edges.forEach(function (e) {
+      var keys = [e.dataset.a, e.dataset.b].concat(e.dataset.x ? e.dataset.x.split(" ") : []);
+      var on = keys.some(function (k) { return set[k]; });
+      e.classList.toggle("hl", on);
+      if (on) { rel[e.dataset.a] = true; rel[e.dataset.b] = true; }
+    });
+    if (PARENT[id]) rel[PARENT[id]] = true;
+    nodes.forEach(function (n) {
+      var k = n.dataset.id;
+      n.classList.toggle("sel", k === id);
+      n.classList.toggle("rel", k !== id && (rel[k] || set[k]) ? true : false);
+    });
+    Object.keys(FRAME).forEach(function (k) {
+      var r = document.getElementById(FRAME[k]);
+      if (r) r.classList.toggle("fsel", k === id);
+    });
+    svg.classList.add("focus");
+  }
+
+  function clearHighlight() {
+    svg.classList.remove("focus");
+    edges.forEach(function (e) { e.classList.remove("hl"); });
+    nodes.forEach(function (n) { n.classList.remove("sel", "rel"); });
+    Object.keys(FRAME).forEach(function (k) { var r = document.getElementById(FRAME[k]); if (r) r.classList.remove("fsel"); });
+  }
+
+  function render(id) {
+    var d = D[id];
+    pKind.textContent = d.kind || "";
+    pTitle.textContent = d.title;
+    var h = "";
+    if (d.lead) h += '<p class="p-lead">' + fmt(d.lead) + "</p>";
+    (d.blocks || []).forEach(function (b) {
+      if (b.h) h += "<h3>" + esc(b.h) + "</h3>";
+      else if (h) h += '<div class="p-gap"></div>';
+      if (b.list) h += "<ul>" + b.list.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>";
+      if (b.steps) h += "<ol>" + b.steps.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ol>";
+      if (b.kv) h += "<dl>" + b.kv.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + fmt(p[1]) + "</dd>"; }).join("") + "</dl>";
+    });
+    if (d.code && d.code.length) h += '<h3>Code</h3><div class="p-code">' + d.code.map(function (c) { return "<code>" + esc(c) + "</code>"; }).join("") + "</div>";
+    var links = (d.links || []).filter(function (l) { return D[l]; });
+    if (links.length) h += '<h3>Connected to</h3><div class="p-links">' + links.map(function (l) { return '<button type="button" data-go="' + l + '">' + esc(D[l].title) + "</button>"; }).join("") + "</div>";
+    pBody.innerHTML = h;
+    pBody.scrollTop = 0;
+  }
+
+  function openNode(id, from) {
+    if (!D[id]) return;
+    current = id;
+    if (from) opener = from;
+    render(id);
+    highlight(id);
+    panel.classList.add("open");
+    panel.removeAttribute("inert");
+    panel.setAttribute("aria-hidden", "false");
+    pTitle.focus({ preventScroll: true });
+  }
+
+  function closePanel() {
+    if (!current) return;
+    current = null;
+    panel.classList.remove("open");
+    panel.setAttribute("inert", "");
+    panel.setAttribute("aria-hidden", "true");
+    clearHighlight();
+    if (opener && opener.focus) opener.focus({ preventScroll: true });
+  }
+
+  nodes.forEach(function (n) {
+    n.addEventListener("click", function (ev) { ev.stopPropagation(); openNode(n.dataset.id, n); });
+    n.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openNode(n.dataset.id, n); }
+    });
+  });
+  svg.addEventListener("click", function (ev) { if (!ev.target.closest(".nd")) closePanel(); });
+  canvas.addEventListener("click", function (ev) { if (ev.target === canvas) closePanel(); });
+  document.getElementById("p-close").addEventListener("click", closePanel);
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") closePanel(); });
+  pBody.addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-go]");
+    if (!b) return;
+    var target = nodeOf(b.dataset.go);
+    openNode(b.dataset.go, target);
+    if (target && target.scrollIntoView) {
+      try { target.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduce ? "auto" : "smooth" }); } catch (e) {}
+    }
+  });
+
+  var box = svg.viewBox.baseVal;
+  var VW = box.width, VH = box.height, scale = 1, manual = false;
+  function fitScale() {
+    var w = canvas.clientWidth - 32, h = canvas.clientHeight - 28;
+    return Math.max(0.5, Math.min(w / VW, h / VH));
+  }
+  function apply() {
+    svg.style.width = Math.round(VW * scale) + "px";
+    svg.style.height = Math.round(VH * scale) + "px";
+    svg.style.minWidth = "0";
+  }
+  function refit() { scale = fitScale(); apply(); }
+  document.getElementById("zi").addEventListener("click", function () { manual = true; scale = Math.min(scale * 1.2, 2.4); apply(); });
+  document.getElementById("zo").addEventListener("click", function () { manual = true; scale = Math.max(scale / 1.2, 0.4); apply(); });
+  document.getElementById("zf").addEventListener("click", function () { manual = false; refit(); });
+  window.addEventListener("resize", function () { if (!manual) refit(); });
+  refit();
+})();
+</script>
