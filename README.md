@@ -1,4 +1,4 @@
-# skills
+# agent-skills
 
 My Claude Code skills.
 
@@ -7,7 +7,7 @@ My Claude Code skills.
 Install all of them:
 
 ```bash
-npx skills add DevKazonovic/skills
+npx skills add DevKazonovic/agent-skills
 ```
 
 Or copy one folder from [`skills/`](skills) into `~/.claude/skills/`.
