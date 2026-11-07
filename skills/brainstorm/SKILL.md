@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: Judge the user's idea or plan in short bullets: a verdict, the assumptions with corrections, a full brainstorm that keeps existing and new features apart, and the build order. Never agrees or praises. Runs only when invoked by name.
+description: "Judge the user's idea or plan in short bullets: a verdict, the assumptions with corrections, a full brainstorm that keeps existing and new features apart, and the build order. Never agrees or praises. Runs only when invoked by name."
 disable-model-invocation: true
 argument-hint: <the idea or plan>
 ---
