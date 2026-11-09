@@ -1,0 +1,117 @@
+{
+  "godeye": 1,
+  "title": "Orders",
+  "system": "Example shop",
+  "summary": "How a checkout becomes a saved order, a confirmation email and lower stock.",
+  "live": "a checkout to its saved order",
+  "bands": [
+    {
+      "title": "People and apps",
+      "items": [
+        {
+          "id": "shopper",
+          "title": "Shopper",
+          "note": "places an order",
+          "col": 1,
+          "kind": "Person",
+          "lead": "Someone buying from the shop."
+        },
+        {
+          "id": "webapp",
+          "title": "Web app",
+          "note": "/checkout",
+          "col": 2,
+          "kind": "Frontend",
+          "lead": "The checkout page at `/checkout`.",
+          "blocks": [{ "list": ["Sends the cart to `POST /orders`", "Shows the order number when the API answers"] }],
+          "code": ["frontend/pages/checkout.vue"]
+        }
+      ]
+    },
+    {
+      "items": [
+        {
+          "id": "backend",
+          "type": "zone",
+          "title": "Backend · Laravel",
+          "kind": "Stack",
+          "lead": "The API and its queue worker, in one Docker container.",
+          "items": [
+            {
+              "id": "api",
+              "title": "Orders API",
+              "note": "validates and saves",
+              "col": 2,
+              "kind": "Backend · HTTP",
+              "lead": "Validates the cart, saves the order and queues the follow-up work.",
+              "blocks": [
+                { "title": "Steps", "steps": ["Checks stock and prices", "Saves the order and its items", "Queues the confirmation job"] },
+                { "title": "Limits", "kv": [["Timeout", "10 s"], ["Rate limit", "30 requests per minute"]] }
+              ],
+              "code": ["app/Http/Controllers/OrderController.php"]
+            },
+            {
+              "id": "worker",
+              "title": "Order worker",
+              "note": "emails and stock",
+              "col": 3,
+              "kind": "Backend · queue",
+              "lead": "Sends the confirmation email and lowers stock.",
+              "blocks": [{ "list": ["Runs on the `orders` queue", "Retries 3 times"] }],
+              "code": ["app/Jobs/ConfirmOrder.php"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Outside",
+      "items": [
+        {
+          "id": "mail",
+          "title": "Mail provider",
+          "note": "SMTP",
+          "col": 3,
+          "kind": "Outside service",
+          "lead": "Delivers the confirmation email.",
+          "blocks": [{ "kv": [["Env key", "`MAIL_HOST`"]] }]
+        }
+      ]
+    },
+    {
+      "items": [
+        {
+          "id": "db",
+          "type": "zone",
+          "title": "MySQL",
+          "layout": "spread",
+          "kind": "Store",
+          "lead": "The main database, shared by the API and the worker.",
+          "items": [
+            {
+              "id": "order-tables",
+              "title": "Order tables",
+              "note": "orders, order_items",
+              "kind": "Database",
+              "lead": "`orders` and `order_items`."
+            },
+            {
+              "id": "stock-tables",
+              "title": "Stock tables",
+              "note": "products, stock_moves",
+              "kind": "Database",
+              "lead": "`products` and `stock_moves`."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "edges": [
+    { "from": "shopper", "to": "webapp", "label": "uses", "live": true, "both": true },
+    { "from": "webapp", "to": "api", "label": "POST /orders", "live": true },
+    { "from": "api", "to": "worker", "label": "queues" },
+    { "from": "worker", "to": "mail", "label": "sends" },
+    { "from": "backend", "to": "db", "label": "reads, writes", "both": true, "lights": ["api", "worker", "order-tables", "stock-tables"] }
+  ]
+}
